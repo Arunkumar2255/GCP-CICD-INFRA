@@ -46,15 +46,15 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
           sudo apt update && sudo apt install terraform
 
-      # Authenticate with Google Cloud
+      # Authenticate with Google Cloud by saving credentials to a file
       - name: Set up Google Cloud credentials
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+        run: echo "${{ secrets.GCP_CREDENTIALS }}" > /tmp/gcp-creds.json
 
       # Configure Google Cloud project
       - name: Configure gcloud
-        run: gcloud config set project ${{ secrets.GCP_PROJECT }}
+        run: |
+          gcloud auth activate-service-account --key-file=/tmp/gcp-creds.json
+          gcloud config set project ${{ secrets.GCP_PROJECT }}
 
       # Initialize Terraform
       - name: Terraform Init
