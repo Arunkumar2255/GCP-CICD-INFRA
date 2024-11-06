@@ -1,0 +1,41 @@
+
+name: Create resources using Terraform
+
+on:
+  push:
+    branches: 
+      - main
+
+jobs:
+  tflint-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout Repository
+      - name: Check out Git Repository
+        uses: actions/checkout@v3
+
+      # Cache TFLint plugins directory to speed up subsequent runs
+      - name: Cache TFLint plugins directory
+        uses: actions/cache@v2
+        with:
+          path: ~/.tflint.d/plugins
+          key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
+
+      # Set up TFLint
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Print TFLint version
+      - name: Show TFLint version
+        run: tflint --version
+
+      # Initialize TFLint plugins
+      - name: Initialize TFLint
+        run: tflint --init
+
+      # Run TFLint checks recursively in all directories
+      - name: Run TFLint
+        run: tflint -f compact --recursive --force
