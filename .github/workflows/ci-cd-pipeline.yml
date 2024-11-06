@@ -1,5 +1,4 @@
-
-name: Create resources using Terraform
+name: Create resources using Terraform on GCP
 
 on:
   push:
@@ -7,7 +6,7 @@ on:
       - main
 
 jobs:
-  tflint-checks:
+  terraform-gcp:
     runs-on: ubuntu-latest
 
     steps:
@@ -39,3 +38,54 @@ jobs:
       # Run TFLint checks recursively in all directories
       - name: Run TFLint
         run: tflint -f compact --recursive --force
+
+      # Install the latest version of Terraform CLI and configure the Terraform CLI configuration
+      - name: Install Terraform
+        run: |
+          wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+          sudo apt update && sudo apt install terraform
+
+      # Authenticate with Google Cloud
+      - name: Set up Google Cloud credentials
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      # Configure Google Cloud project
+      - name: Configure gcloud
+        run: gcloud config set project ${{ secrets.GCP_PROJECT }}
+
+      # Initialize Terraform
+      - name: Terraform Init
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        run: terraform init
+
+      # Checks that all Terraform configuration files adhere to a canonical format
+      - name: Terraform Format
+        run: terraform fmt
+
+      # Run TFLint after initialization
+      - name: Terraform lint
+        run: tflint 
+
+      # Generates an execution plan for Terraform
+      - name: Terraform Plan
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        run: terraform plan
+
+      # Apply Terraform configuration
+      - name: Terraform Apply
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        run: terraform apply -auto-approve -input=false
+
+      # Destroy resources (optional)
+      - name: Terraform Destroy
+        if: always()
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        run: terraform destroy -auto-approve -input=false
+
