@@ -49,8 +49,9 @@ jobs:
       # Configure gcloud
       - name: Configure gcloud
         run: |
-          # Decode the base64-encoded GCP credentials and write to a file
-          echo "${{ secrets.GCP_CREDENTIALS }}" | base64 --decode > /tmp/gcp-creds.json
+         # Decode the base64-encoded GCP credentials and write to a file
+           printf '%s' "${{ secrets.GCP_CREDENTIALS }}" | base64 --decode > /tmp/gcp-creds.json
+    
           
           # Authenticate with Google Cloud
           gcloud auth activate-service-account --key-file=/tmp/gcp-creds.json
