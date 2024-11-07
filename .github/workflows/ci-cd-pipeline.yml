@@ -48,7 +48,9 @@ jobs:
 
       # Authenticate with Google Cloud by saving credentials to a file
       - name: Set up Google Cloud credentials
-        run: echo "${{ secrets.GCP_CREDENTIALS }}" > /tmp/gcp-creds.json
+        run: |
+          echo "${{ secrets.GCP_CREDENTIALS }}" > /tmp/gcp-creds.json
+          cat /tmp/gcp-creds.json
 
       # Configure Google Cloud project
       - name: Configure gcloud
