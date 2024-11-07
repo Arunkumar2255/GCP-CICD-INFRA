@@ -50,7 +50,7 @@ jobs:
       # Configure Google Cloud project
       - name: Configure gcloud
         run: |
-          echo "${{ secrets.GCP_CREDENTIALS }}" > /tmp/gcp-creds.json
+          echo "${{ secrets.GCP_CREDENTIALS }}" | sed 's/\\n/\n/g' > /tmp/gcp-creds.json
           gcloud auth activate-service-account --key-file=/tmp/gcp-creds.json
           gcloud config set project ${{ secrets.GCP_PROJECT }}
 
