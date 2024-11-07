@@ -47,17 +47,10 @@ jobs:
           sudo apt update && sudo apt install terraform
 
       # Authenticate with Google Cloud by saving credentials to a file
-      - name: Set up Google Cloud credentials
-        run: |
-          echo ${{ secrets.GCP_CREDENTIALS }} > /tmp/gcp-creds.json
-          # sed -i 's/\("project_id":\s*"\)[^"]*"/\1gcp-cicd-devsecops"/' /tmp/gcp-creds.json
-          # echo $?
-          # #sed -i 's/"project_id": "\*\*\*"/"project_id": "gcp-cicd-devsecops"/' /tmp/gcp-creds.json
-          # cat /tmp/gcp-creds.json
-
       # Configure Google Cloud project
       - name: Configure gcloud
         run: |
+          echo "${{ secrets.GCP_CREDENTIALS }}" > /tmp/gcp-creds.json
           gcloud auth activate-service-account --key-file=/tmp/gcp-creds.json
           gcloud config set project ${{ secrets.GCP_PROJECT }}
 
