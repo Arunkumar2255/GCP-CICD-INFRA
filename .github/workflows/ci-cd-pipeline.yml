@@ -50,7 +50,7 @@ jobs:
       - name: Set up Google Cloud credentials
         run: |
           echo "${{ secrets.GCP_CREDENTIALS }}" > /tmp/gcp-creds.json
-          sed -i 's/project_id: \*\*\*/project_id: "gcp-cicd-devsecops"/' /tmp/gcp-creds.json
+          sed -i '/project_id:/c\  "project_id": "gcp-cicd-devsecops",' /tmp/gcp-creds.json
           cat /tmp/gcp-creds.json
 
       # Configure Google Cloud project
