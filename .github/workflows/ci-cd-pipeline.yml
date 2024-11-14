@@ -52,10 +52,14 @@ jobs:
         with:
           credentials_json: '${{ secrets.SERVICE_ACCOUNT_KEY_JSON }}'
 
+      # Configure Google Cloud project
+      - name: Configure gcloud
+        run: gcloud config set project ${{ secrets.GCP_PROJECT }}
+
       # Initialize Terraform
       - name: Terraform Init
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY_JSON }}
         working-directory: GKE_DevSecops
         run: terraform init
 
@@ -70,19 +74,19 @@ jobs:
       # Generates an execution plan for Terraform
       - name: Terraform Plan
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY_JSON }}
         run: terraform plan
 
       # Apply Terraform configuration
       - name: Terraform Apply
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY_JSON }}
         run: terraform apply -auto-approve -input=false
 
       # Destroy resources (optional)
       - name: Terraform Destroy
         if: always()
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY_JSON }}
         run: terraform destroy -auto-approve -input=false
 
