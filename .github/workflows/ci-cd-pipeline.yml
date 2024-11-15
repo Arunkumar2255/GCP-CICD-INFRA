@@ -51,6 +51,9 @@ jobs:
         uses: 'google-github-actions/auth@v2'
         with:
           credentials_json: '${{ secrets.SERVICE_ACCOUNT_KEY_JSON }}'
+      - name: Verify credentials file
+        run: ls -la /home/runner/work/GCP-CICD-INFRA/GCP-CICD-INFRA/
+
 
       #  Configure Google Cloud project
       # - name: Configure gcloud
