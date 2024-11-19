@@ -1,3 +1,4 @@
+
 name: Terraform CI/CD Pipeline
 
 on:
@@ -12,27 +13,52 @@ jobs:
       GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY_JSON }}
 
     steps:
-      # Checkout Repository
+      # Step 1: Checkout Repository
       - name: Check out Repository
         uses: actions/checkout@v3
 
-      # Cache TFLint plugins directory
+      # Step 2: Cache TFLint plugins directory
       - name: Cache TFLint plugins directory
         uses: actions/cache@v2
         with:
           path: ~/.tflint.d/plugins
           key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
 
-      # Set up TFLint
+      # Step 3: Set up TFLint
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@v2
 
-      # Initialize TFLint plugins
+      # Step 4: Initialize TFLint plugins
       - name: Initialize TFLint
         run: tflint --init
 
-      # Run TFLint checks
+      # Step 5: Run TFLint checks
       - name: Run TFLint
+        id: tflint
         run: tflint -f compact --recursive --force
 
+      # Step 6: Fail Pipeline if TFLint Detects Errors
+      - name: Check TFLint Results
+        if: ${{ failure() }}
+        run: |
+          echo "TFLint detected errors in the Terraform code. Failing the pipeline."
+          exit 1
+
+      # Step 7: Initialize Terraform
+      - name: Terraform Init
+        if: ${{ success() }}
+        working-directory: GKE_DevSecops
+        run: terraform init
+
+      # Step 8: Terraform Plan
+      - name: Terraform Plan
+        if: ${{ success() }}
+        working-directory: GKE_DevSecops
+        run: terraform plan -out=tfplan
+
+      # Step 9: Terraform Apply
+      - name: Terraform Apply
+        if: ${{ success() && github.ref == 'refs/heads/main' }}
+        working-directory: GKE_DevSecops
+        run: terraform apply -auto-approve tfplan
 
