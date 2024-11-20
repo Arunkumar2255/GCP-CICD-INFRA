@@ -38,27 +38,27 @@ output "master_proxy_connection" {
 
 output "master_ca_cert" {
   description = "The CA Certificate used to connect to the master instance via SSL"
-  value       = google_sql_database_instance.master.server_ca_cert.0.cert
+  value       = google_sql_database_instance.master.server_ca_cert[0].cert
 }
 
 output "master_ca_cert_common_name" {
   description = "The CN valid for the master instance CA Cert"
-  value       = google_sql_database_instance.master.server_ca_cert.0.common_name
+  value       = google_sql_database_instance.master.server_ca_cert[0].common_name
 }
 
 output "master_ca_cert_create_time" {
   description = "Creation time of the master instance CA Cert"
-  value       = google_sql_database_instance.master.server_ca_cert.0.create_time
+  value       = google_sql_database_instance.master.server_ca_cert[0].create_time
 }
 
 output "master_ca_cert_expiration_time" {
   description = "Expiration time of the master instance CA Cert"
-  value       = google_sql_database_instance.master.server_ca_cert.0.expiration_time
+  value       = google_sql_database_instance.master.server_ca_cert[0].expiration_time
 }
 
 output "master_ca_cert_sha1_fingerprint" {
   description = "SHA Fingerprint of the master instance CA Cert"
-  value       = google_sql_database_instance.master.server_ca_cert.0.sha1_fingerprint
+  value       = google_sql_database_instance.master.server_ca_cert[0].sha1_fingerprint
 }
 
 # ------------------------------------------------------------------------------
@@ -81,27 +81,27 @@ output "db_name" {
 
 output "failover_instance_name" {
   description = "The name of the failover database instance"
-  value       = join("", google_sql_database_instance.failover_replica.*.name)
+  value       = join("", google_sql_database_instance.failover_replica[*].name)
 }
 
 output "failover_public_ip_address" {
   description = "The public IPv4 address of the failover instance."
-  value       = join("", google_sql_database_instance.failover_replica.*.public_ip_address)
+  value       = join("", google_sql_database_instance.failover_replica[*].public_ip_address)
 }
 
 output "failover_private_ip_address" {
   description = "The private IPv4 address of the failover instance."
-  value       = join("", google_sql_database_instance.failover_replica.*.private_ip_address)
+  value       = join("", google_sql_database_instance.failover_replica[*].private_ip_address)
 }
 
 output "failover_ip_addresses" {
   description = "All IP addresses of the failover instance JSON encoded, see https://www.terraform.io/docs/providers/google/r/sql_database_instance.html#ip_address-0-ip_address"
-  value       = jsonencode(google_sql_database_instance.failover_replica.*.ip_address)
+  value       = jsonencode(google_sql_database_instance.failover_replica[*].ip_address)
 }
 
 output "failover_instance" {
   description = "Self link to the failover instance"
-  value       = join("", google_sql_database_instance.failover_replica.*.self_link)
+  value       = join("", google_sql_database_instance.failover_replica[*].self_link)
 }
 
 # output "failover_proxy_connection" {
@@ -149,22 +149,22 @@ output "read_replica_instance_names" {
 
 output "read_replica_ip_addresses" {
   description = "All IP addresses of the read replica instances JSON encoded, see https://www.terraform.io/docs/providers/google/r/sql_database_instance.html#ip_address-0-ip_address"
-  value       = jsonencode(google_sql_database_instance.read_replica.*.ip_address)
+  value       = jsonencode(google_sql_database_instance.read_replica[*].ip_address)
 }
 
 output "read_replica_public_ip_addresses" {
   description = "List of public IPv4 addresses of the read replica instances."
-  value       = google_sql_database_instance.read_replica.*.public_ip_address
+  value       = google_sql_database_instance.read_replica[*].public_ip_address
 }
 
 output "read_replica_private_ip_addresses" {
   description = "List of private IPv4 addresses of the read replica instances."
-  value       = google_sql_database_instance.read_replica.*.private_ip_address
+  value       = google_sql_database_instance.read_replica[*].private_ip_address
 }
 
 output "read_replica_instances" {
   description = "List of self links to the read replica instances"
-  value       = google_sql_database_instance.read_replica.*.self_link
+  value       = google_sql_database_instance.read_replica[*].self_link
 }
 
 # output "read_replica_proxy_connections" {
@@ -174,7 +174,7 @@ output "read_replica_instances" {
 
 output "read_replica_server_ca_certs" {
   description = "JSON encoded list of CA Certificates used to connect to the read replica instances via SSL"
-  value       = jsonencode(google_sql_database_instance.read_replica.*.server_ca_cert)
+  value       = jsonencode(google_sql_database_instance.read_replica[*].server_ca_cert)
 }
 
 # ------------------------------------------------------------------------------
