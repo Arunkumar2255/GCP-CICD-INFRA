@@ -144,7 +144,7 @@ output "failover_instance" {
 
 output "read_replica_instance_names" {
   description = "List of names for the read replica instances"
-  value       = google_sql_database_instance.read_replica.*.name
+  value       = google_sql_database_instance.read_replica[*].name
 }
 
 output "read_replica_ip_addresses" {
